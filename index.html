@@ -76,6 +76,9 @@
         if (!tw || typeof tw.openTelegramLink !== "function") return false;
         if (typeof tw.ready === "function") tw.ready();
         tw.openTelegramLink(TARGET);
+        if (typeof tw.close === "function") {
+          setTimeout(function () { tw.close(); }, 700);
+        }
         return true;
       }
 
