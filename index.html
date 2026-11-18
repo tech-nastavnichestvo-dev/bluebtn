@@ -60,6 +60,19 @@
       var statusEl = document.getElementById("status");
       var linkEl = document.getElementById("open-link");
 
+      var opened = false;
+      function closeIfReturned() {
+        var tw = webApp();
+        if (opened && tw && typeof tw.close === "function") tw.close();
+      }
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "visible") closeIfReturned();
+      });
+      window.addEventListener("focus", closeIfReturned);
+      if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.onEvent === "function") {
+        Telegram.WebApp.onEvent("activated", closeIfReturned);
+      }
+
       function webApp() {
         return window.Telegram && Telegram.WebApp ? Telegram.WebApp : null;
       }
@@ -76,6 +89,7 @@
         if (!tw || typeof tw.openTelegramLink !== "function") return false;
         if (typeof tw.ready === "function") tw.ready();
         tw.openTelegramLink(TARGET);
+        opened = true;
         if (typeof tw.close === "function") {
           setTimeout(function () { tw.close(); }, 700);
         }
