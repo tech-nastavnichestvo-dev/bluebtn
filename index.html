@@ -1,18 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=https://t.me/conferences_maxudodbot/aboutme?startapp=a_5CwRa6LlSMAyFxWXbb0YG1_lp_utmknopka">
-    <title>Redirecting...</title>
-
-    <script>
-        window.location.replace("https://t.me/conferences_maxudodbot/aboutme?startapp=a_5CwRa6LlSMAyFxWXbb0YG1_lp_utmknopka");
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Открываем мини-приложение</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: var(--tg-theme-bg-color, #0f1115);
+      --text: var(--tg-theme-text-color, #f2f4f8);
+      --hint: var(--tg-theme-hint-color, #9aa3b2);
+      --btn: var(--tg-theme-button-color, #2481cc);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+    }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    main {
+      box-sizing: border-box;
+      max-width: 28rem;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 2rem;
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    p {
+      margin: 0 0 1.5rem;
+      color: var(--hint);
+      line-height: 1.45;
+    }
+    a.button {
+      display: inline-block;
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      background: var(--btn);
+      color: var(--btn-text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
-    Если редирект не сработал автоматически,
-    <a href="https://t.me/conferences_maxudodbot/aboutme?startapp=a_5CwRa6LlSMAyFxWXbb0YG1_lp_utmknopka">
-        нажмите сюда
-    </a>.
+  <main>
+    <h1>Открываем мини-приложение</h1>
+    <p id="status">Подождите секунду, сейчас откроем.</p>
+    <a class="button" id="open-link" href="https://t.me/conferences_maxudodbot/aboutme?startapp=a_5CwRa6LlSMAyFxWXbb0YG1_lp_utmknopka">Открыть мини-приложение</a>
+  </main>
+  <script>
+    (function () {
+      var TARGET = "https://t.me/conferences_maxudodbot/aboutme?startapp=a_5CwRa6LlSMAyFxWXbb0YG1_lp_utmknopka";
+      var statusEl = document.getElementById("status");
+      var linkEl = document.getElementById("open-link");
+
+      function webApp() {
+        return window.Telegram && Telegram.WebApp ? Telegram.WebApp : null;
+      }
+
+      function insideTelegram(tw) {
+        if (!tw) return false;
+        if (tw.initData) return true;
+        if (tw.initDataUnsafe && (tw.initDataUnsafe.user || tw.initDataUnsafe.chat)) return true;
+        if (tw.platform && tw.platform !== "unknown") return true;
+        return false;
+      }
+
+      function openViaSdk(tw) {
+        if (!tw || typeof tw.openTelegramLink !== "function") return false;
+        if (typeof tw.ready === "function") tw.ready();
+        tw.openTelegramLink(TARGET);
+        return true;
+      }
+
+      function openTarget() {
+        var tw = webApp();
+        if (insideTelegram(tw) && openViaSdk(tw)) {
+          statusEl.textContent = "Если окно не открылось, нажмите кнопку ниже.";
+          return;
+        }
+        // Вне Telegram или без SDK: обычный переход по t.me.
+        window.location.replace(TARGET);
+      }
+
+      linkEl.addEventListener("click", function (event) {
+        var tw = webApp();
+        if (insideTelegram(tw) && typeof tw.openTelegramLink === "function") {
+          event.preventDefault();
+          openViaSdk(tw);
+        }
+      });
+
+      openTarget();
+    })();
+  </script>
 </body>
 </html>
